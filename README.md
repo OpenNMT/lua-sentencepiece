@@ -17,5 +17,5 @@ lua test.lua
 The module creates a `sentencepiece` namespace with 3 functions:
 
 * `sentencepiece.load(model)`: loads the model, returns false if not successful
-* `sentencepiece.encode(string)`: encode the string (convert into pieces table)
-* `sentencepiece.decode(table)`: build a string from the table of piece
+* `sentencepiece.encode(string)`: encodes the string (convert into pieces table)
+* `sentencepiece.decode(table)`: builds a string from the table of piece

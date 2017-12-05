@@ -26,6 +26,6 @@ if(APPLE)
   SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -all_load")
 endif()
   
-install(FILES lua-sentencepiece.so
+install(FILES ${CMAKE_BINARY_DIR}/lua-sentencepiece.so
   DESTINATION ${INSTALL_DEST}
 )

@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.1)
 
 project(lua-sentencepiece)
 
-find_package (Torch REQUIRED)
+set(CMAKE_CXX_STANDARD 11)
+find_package(Lua REQUIRED)
 
 include_directories(
-  ${TORCH_INCLUDE_DIR}
+  ${LUA_INCLUDE_DIR}
 )
 
 set(LIBRARIES
@@ -15,17 +16,17 @@ set(LIBRARIES
 list(APPEND SOURCES src/lua_wrapper.cc)
 if(NOT APPLE)
   # on MacOs - linking with lua library fails at runtime with a double lua_close() call
-  list(APPEND LIBRARIES lua)
+  list(APPEND LIBRARIES ${LUA_LIBRARIES})
 endif()
 
 add_library(${PROJECT_NAME} MODULE ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 if(APPLE)
-  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -all_load")
+  set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -all_load")
 endif()
-  
+
 install(FILES ${CMAKE_BINARY_DIR}/lua-sentencepiece.so
   DESTINATION ${INSTALL_DEST}
 )

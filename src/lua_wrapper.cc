@@ -6,24 +6,39 @@ extern "C"
 int luaopen_sentencepiece(lua_State *L);
 }
 
-#include <sentencepiece_processor.h>
+#include <string>
+#include <unordered_map>
 #include <iostream>
 
-sentencepiece::SentencePieceProcessor processor;
+#include <sentencepiece_processor.h>
 
-static int load(lua_State *L) {
 
-  bool success = processor.Load(lua_tostring(L, -1));
-  lua_pop(L, 1);
-  lua_pushboolean(L, success);
+static std::unordered_map<std::string, sentencepiece::SentencePieceProcessor*> processor_cache;
+static std::mutex processor_cache_mutex;
 
-  return 1;
+static sentencepiece::SentencePieceProcessor* load_processor(const std::string& processor_model_path)
+{
+  std::lock_guard<std::mutex> lock(processor_cache_mutex);
+
+  auto it = processor_cache.find(processor_model_path);
+  if (it != processor_cache.end())
+    return it->second;
+
+  sentencepiece::SentencePieceProcessor* processor = new sentencepiece::SentencePieceProcessor();
+  bool success = processor->Load(processor_model_path);
+  if (!success) {
+    std::cerr<<"Cannot load: "<<processor_model_path<<std::endl;
+    exit(0);
+  }
+  processor_cache[processor_model_path] = processor;
+  return processor;
 }
 
 static int encode(lua_State *L) {
   std::vector<std::string> pieces;
-  processor.Encode(lua_tostring(L, -1), &pieces);
-  lua_pop(L, 1);
+  sentencepiece::SentencePieceProcessor *processor = load_processor(lua_tostring(L, -2));
+  processor->Encode(lua_tostring(L, -1), &pieces);
+  lua_pop(L, 2);
   lua_newtable(L);
   for(int i=0; i<pieces.size(); i++) {
     lua_pushnumber(L, i + 1);
@@ -35,6 +50,7 @@ static int encode(lua_State *L) {
 
 static int decode(lua_State *L) {
   std::vector<std::string> pieces;
+  sentencepiece::SentencePieceProcessor *processor = load_processor(lua_tostring(L, -2));
   for(int i=1; true; i++) {
     lua_rawgeti(L, -1, i);
     if (lua_isnil(L, -1)) break;
@@ -42,9 +58,9 @@ static int decode(lua_State *L) {
     pieces.push_back(a);
     lua_pop(L,1);
   }
-  lua_pop(L, 2);
+  lua_pop(L, 3);
   std::string v;
-  processor.Decode(pieces, &v);
+  processor->Decode(pieces, &v);
   lua_pushstring(L, v.c_str());
   return 1;
 }
@@ -63,10 +79,6 @@ int luaopen_sentencepiece(lua_State *L) {
     std::cerr<<"Cannot create global namespace"<<std::endl;
     exit(0);
   }
-
-  /* add functions */
-  lua_pushcfunction(L, load);
-  lua_setfield(L, -2, "load");
 
   lua_pushcfunction(L, encode);
   lua_setfield(L, -2, "encode");

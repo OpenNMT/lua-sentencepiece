@@ -9,6 +9,7 @@ int luaopen_sentencepiece(lua_State *L);
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <mutex>
 
 #include <sentencepiece_processor.h>
 

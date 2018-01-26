@@ -2,9 +2,19 @@ This repository defines a lua wrapper rock for [sentencepiece](https://github.co
 
 ## Installation
 
-You need first to install sentencepiece then:
+1\. Install [sentencepiece](https://github.com/google/sentencepiece)
+2\. Install Lua development libraries:
 
+On Ubuntu, they can be installed with apt-get:
+
+```bash
+sudo apt-get install lua5.1 liblua5.1-dev
 ```
+
+3\. Install the wrapper:
+
+
+```bash
 luarocks make lua-sentencepiece-scm-1.rockspec
 ```
 

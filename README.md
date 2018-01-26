@@ -3,6 +3,7 @@ This repository defines a lua wrapper rock for [sentencepiece](https://github.co
 ## Installation
 
 1\. Install [sentencepiece](https://github.com/google/sentencepiece)
+
 2\. Install Lua development libraries:
 
 On Ubuntu, they can be installed with apt-get:

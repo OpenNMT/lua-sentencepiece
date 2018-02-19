@@ -12,7 +12,7 @@ find_path(LUA_INCLUDE_DIR NAMES
   )
 
 if(NOT LUA_LIBRARY OR NOT LUA_INCLUDE_DIR)
-  error("lua not found")
+  message(FATAL_ERROR "lua not found")
 else()
   message(STATUS "Found Lua: ${LUA_LIBRARY}")
 endif()
@@ -21,7 +21,7 @@ find_library(SP_LIBRARY NAMES sentencepiece)
 find_path(SP_INCLUDE_DIR NAMES sentencepiece_processor.h)
 
 if(NOT SP_LIBRARY OR NOT SP_INCLUDE_DIR)
-  error("sentencepiece not found")
+  message(FATAL_ERROR "sentencepiece not found")
 else()
   message(STATUS "Found sentencepiece: ${SP_LIBRARY}")
 endif()

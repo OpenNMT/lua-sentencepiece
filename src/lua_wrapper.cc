@@ -26,8 +26,8 @@ static sentencepiece::SentencePieceProcessor* load_processor(const std::string& 
     return it->second;
 
   sentencepiece::SentencePieceProcessor* processor = new sentencepiece::SentencePieceProcessor();
-  bool success = processor->Load(processor_model_path);
-  if (!success) {
+  const auto success = processor->Load(processor_model_path);
+  if (!success.ok()) {
     std::cerr<<"Cannot load: "<<processor_model_path<<std::endl;
     exit(0);
   }
